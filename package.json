@@ -1,6 +1,6 @@
 {
   "name": "avito.backend",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "author": "",
   "private": true,
@@ -32,6 +32,7 @@
     "axios": "^1.19.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "ioredis": "^6.0.0",
     "pg": "^8.23.0",
     "pg-hstore": "^2.3.4",
     "reflect-metadata": "^0.2.2",

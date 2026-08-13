@@ -6,12 +6,12 @@ import {
   IAvitoAccountCreateRequest,
   IAvitoAccountCreateResponse,
 } from '@modules/avito/interfaces';
+import { AvitoAccountProvider } from '@modules/avito/providers/account/provider';
 import {
   AvitoAccountClientIdQuery,
   AvitoAccountListQuery,
 } from '@modules/avito/queries';
 import '@modules/avito/queries/account/list/query';
-import { AvitoApiService } from '@modules/avito/services';
 import { Injectable } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { ErrorCodeEnum } from '@shared/enums';
@@ -21,7 +21,7 @@ import { IPagination } from '@shared/interfaces';
 @Injectable()
 export class AvitoAccountService {
   constructor(
-    private readonly avitoApiService: AvitoApiService,
+    private readonly avitoAccountProvider: AvitoAccountProvider,
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
   ) {}
@@ -46,13 +46,15 @@ export class AvitoAccountService {
     }
 
     // Запрашиваем у АВИТО токен
-    const tokens = await this.avitoApiService.getAccessToken({
+    const tokens = await this.avitoAccountProvider.getAccessToken({
       clientId: fields.clientId,
       clientSecret: fields.clientSecret,
     });
 
     // Получаем по апи авито данные о профиле
-    const profile = await this.avitoApiService.getProfile(tokens.accessToken);
+    const profile = await this.avitoAccountProvider.getProfileInfo(
+      tokens.accessToken,
+    );
 
     // Создаем строчку аккаунта в БД
     const account = await this.commandBus.execute(
