@@ -1,98 +1,158 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🦃 Grampus — Avito Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend-сервис для хранения, обработки и отправки сообщений с платформой [Авито](https://avito.ru) через официальный API.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 📋 О проекте
 
-## Description
+Grampus — это серверное приложение, которое решает следующие задачи:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Хранение данных** — управление аккаунтами Авито, пользователями и чатами с персистентным хранением в PostgreSQL и кэшированием через Redis.
+- **Обработка сообщений** — парсинг, маршрутизация и бизнес-логика входящих/исходящих сообщений из чатов Авито.
+- **Отправка сообщений** — формирование и доставка ответов через API Авито с ретрай-логикой и обработкой ошибок.
 
-## Project setup
+## 🏗 Архитектура
+
+Проект построен на [NestJS](https://nestjs.com/) и следует модульной архитектуре:
+
+```
+src/
+├── modules/
+│   ├── avito/          # Доменная логика Авито (CQRS, сервисы, репозитории)
+│   ├── database/       # Подключение к PostgreSQL + Sequelize ORM
+│   ├── redis/          # Кэширование и временное хранение через Redis
+│   └── health/         # Health-check эндпоинты
+├── shared/             # Общие утилиты, DTO, перехватчики, фильтры
+└── main.ts             # Точка входа приложения
+```
+
+### Ключевые паттерны
+
+| Паттерн | Библиотека | Зачем |
+|---------|-----------|-------|
+| **CQRS** | `@nestjs/cqrs` | Разделение команд (запись) и запросов (чтение) |
+| **ORM** | `sequelize` + `pg` | Персистентность в PostgreSQL |
+| **Кэширование** | `ioredis` | Быстрый доступ к данным, блокировки, сессии |
+| **HTTP-клиент** | `axios` | Взаимодействие с внешним API Авито |
+| **Валидация** | `class-validator` + `class-transformer` | Проверка входящих данных |
+
+## 🚀 Быстрый старт
+
+### Требования
+
+- Node.js >= 18
+- pnpm
+- PostgreSQL
+- Redis
+
+### Установка
 
 ```bash
 $ pnpm install
 ```
 
-## Compile and run the project
+### Настройка
+
+Скопируйте пример окружения и заполните значения:
 
 ```bash
-# development
-$ pnpm run start
+$ cp .env.example .env
+```
 
-# watch mode
+Необходимые переменные окружения:
+
+| Переменная | Описание |
+|-----------|----------|
+| `DATABASE_HOST` | Хост PostgreSQL |
+| `DATABASE_PORT` | Порт PostgreSQL |
+| `DATABASE_USER` | Пользователь БД |
+| `DATABASE_PASSWORD` | Пароль БД |
+| `DATABASE_NAME` | Имя базы данных |
+| `REDIS_HOST` | Хост Redis |
+| `REDIS_PORT` | Порт Redis |
+| `REDIS_USER` | Пользователь Redis |
+| `REDIS_PASSWORD` | Пароль Redis |
+| `REDIS_DB_NUMBER` | Номер БД Redis |
+
+### Запуск
+
+```bash
+# Development-режим с hot-reload
 $ pnpm run start:dev
 
-# production mode
+# Production-режим
+$ pnpm run build
 $ pnpm run start:prod
 ```
 
-## Run tests
+## 🛠 Скрипты
 
-```bash
-# unit tests
-$ pnpm run test
+| Команда | Описание |
+|---------|----------|
+| `pnpm run start` | Запуск приложения |
+| `pnpm run start:dev` | Запуск в watch-режиме |
+| `pnpm run start:debug` | Запуск с debugger |
+| `pnpm run build` | Сборка в `dist/` |
+| `pnpm run lint` | Lint + автофикс |
+| `pnpm run format` | Форматирование Prettier |
+| `pnpm run test` | Unit-тесты |
+| `pnpm run test:cov` | Тесты с coverage |
 
-# e2e tests
-$ pnpm run test:e2e
+## 📡 API
 
-# test coverage
-$ pnpm run test:cov
+После запуска приложение предоставляет REST API. Документация Swagger доступна по адресу:
+
+```
+http://localhost:3000/api/docs
 ```
 
-## Deployment
+### Текущие эндпоинты
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Метод | Путь | Описание |
+|-------|------|----------|
+| `GET` | `/health` | Health-check |
+| `GET` | `/v1/accounts` | Список аккаунтов Авито |
+| `POST` | `/v1/accounts` | Создание аккаунта Авито |
+| `GET` | `/v1/accounts/:id` | Аккаунт по ID |
+| `GET` | `/v1/accounts/:id/chats` | Чаты аккаунта |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 📐 Модули проекта
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+### AvitoModule
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Основной доменный модуль, отвечающий за взаимодействие с платформой Авито:
 
-## Resources
+- **Command Handler** — обработка команд создания аккаунтов и пользователей
+- **Query Handler** — запросы списка, получения по ID и client-id
+- **Services** — бизнес-логика аккаунтов, чатов, вызовов внешнего API
+- **Repositories** — доступ к данным через Sequelize
+- **Models** — ORM-модели `Account`, `User`, `Chat`
 
-Check out a few resources that may come in handy when working with NestJS:
+### DatabaseModule
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Подключение к PostgreSQL через Sequelize с поддержкой auto-load моделей.
 
-## Support
+### RedisModule
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Кэширование данных и временное хранение:
 
-## Stay in touch
+- Конфигурация через переменные окружения
+- Retry-стратегия с exponential backoff
+- Обертка `RedisService` над ioredis (set/get/del + TTL)
+- Централизованный реестр ключей (`REDIS_KEYS`)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### HealthModule
 
-## License
+Эндпоинт проверки доступности сервиса.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 🔮 Планы развития
+
+- [ ] Захват и обработка входящих сообщений из чатов Авито
+- [ ] Автоматическая отправка ответов через API
+- [ ] Очередь задач для ретрая неудачных запросов
+- [ ] Rate-limiting при вызовах внешнего API
+- [ ] Логирование переписки в БД
+- [ ] WebSocket-уведомления о новых сообщениях
+
+## 📄 License
+
+UNLICENSED
