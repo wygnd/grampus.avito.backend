@@ -3,6 +3,12 @@ import { ErrorCodeEnum } from '@shared/enums';
 import { IErrorCodeEntry } from '@shared/interfaces';
 
 export const ERROR_CODE: Record<ErrorCodeEnum, IErrorCodeEntry> = {
+  /* ======================= AVITO USERS ======================= */
+  [ErrorCodeEnum.USER_NOT_FOUND]: {
+    status: HttpStatus.NOT_FOUND,
+    message: 'Пользователь не найден',
+  },
+
   /* ======================= AVITO ACCOUNTS ======================= */
   [ErrorCodeEnum.ACCOUNT_EXISTS]: {
     status: HttpStatus.CONFLICT,

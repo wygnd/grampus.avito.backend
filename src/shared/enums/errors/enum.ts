@@ -1,4 +1,7 @@
 export enum ErrorCodeEnum {
+  /* ========= USERS ========= */
+  USER_NOT_FOUND = 'USER_NOT_FOUND',
+
   /* ========= ACCOUNTS ========= */
   ACCOUNT_EXISTS = 'ACCOUNT_EXISTS',
   ACCOUNT_NOT_FOUND = 'ACCOUNT_NOT_FOUND',

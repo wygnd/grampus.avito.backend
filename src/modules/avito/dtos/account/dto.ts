@@ -8,19 +8,19 @@ export class AvitoAccountDTO implements IAvitoAccountEntity {
   @Expose()
   id: string;
 
-  @Exclude()
+  @Expose()
   clientId: string;
 
-  @Exclude()
+  @Expose()
   clientSecret: string;
 
-  @Exclude()
+  @Expose()
   accessToken: string;
 
-  @Exclude()
+  @Expose()
   refreshToken: string;
 
-  @Exclude()
+  @Expose()
   expiresAt: string;
 
   @Expose()

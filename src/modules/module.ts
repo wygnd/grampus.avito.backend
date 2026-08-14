@@ -1,3 +1,4 @@
+import { AuthModule } from '@modules/auth/module';
 import { AvitoModule } from '@modules/avito/module';
 import { DatabaseModule } from '@modules/database/module';
 import { HealthModule } from '@modules/health/module';
@@ -19,6 +20,7 @@ import { TransformSuccessResponseInterceptor } from '@shared/interceptors';
     DatabaseModule,
     RedisModule,
     AvitoModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [

@@ -13,4 +13,12 @@ export class AvitoUserRepository {
   public async create(fields: IAvitoUserCreateEntity): Promise<AvitoUserModel> {
     return this.repo.create(fields);
   }
+
+  public async getByAccountId(
+    accountId: string,
+  ): Promise<AvitoUserModel | null> {
+    return this.repo.findOne({
+      where: { accountId },
+    });
+  }
 }

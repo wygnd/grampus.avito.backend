@@ -1,15 +1,19 @@
-import {
-  IAvitoApiAccountGetAccessTokenRequest,
-  IAvitoApiAccountGetAccessTokenResponse,
-  IAvitoApiAccountTokenResponse,
-  IAvitoUserInfo,
-} from '@modules/avito/interfaces';
+import { IAvitoApiAccountGetAccessTokenRequest, IAvitoApiAccountGetAccessTokenResponse, IAvitoApiAccountTokenResponse, IAvitoUserInfo } from '@modules/avito/interfaces';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ErrorCodeEnum } from '@shared/enums';
 import { AppException } from '@shared/exceptions';
 import { IAvitoError } from '@shared/interfaces';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+
+
+
+
+
+
+
+
+
 
 @Injectable()
 export class AvitoApiService {
@@ -23,25 +27,53 @@ export class AvitoApiService {
     });
   }
 
-  private async post<T = unknown, U = unknown>(
+  public async post<T = unknown, U = unknown>(
     url: string,
     body: U,
+    accessToken?: string,
     config?: AxiosRequestConfig,
   ): Promise<T> {
+    let requestConfig = {};
+
+    if (config) {
+      requestConfig = config;
+    }
+
+    if (accessToken) {
+      requestConfig['headers']['Authorization'] = `Bearer ${accessToken}`;
+    }
+
     const response = await this.httpInstance.post<U, AxiosResponse<T>>(
       url,
       body,
-      config,
+      requestConfig,
     );
 
     return response.data;
   }
 
-  private async get<T = unknown>(
+  public async get<T = unknown>(
     url: string,
-    config: AxiosRequestConfig,
+    accessToken?: string,
+    config?: AxiosRequestConfig,
   ): Promise<T> {
-    const response = await this.httpInstance.get<T>(url, config);
+    let requestConfig = {};
+
+    if (config) {
+      requestConfig = config;
+    }
+
+    if (accessToken) {
+      if ('headers' in requestConfig && requestConfig.headers) {
+        requestConfig['headers']['Authorization'] = `Bearer ${accessToken}`;
+      } else {
+        requestConfig['headers'] = {};
+
+        requestConfig['headers']['Authorization'] = `Bearer ${accessToken}`;
+      }
+    }
+
+    const response = await this.httpInstance.get<T>(url, requestConfig);
 
     return response.data;
   }
@@ -85,10 +117,6 @@ export class AvitoApiService {
   }
 
   public async getProfile(accessToken: string): Promise<IAvitoUserInfo> {
-    return this.get<IAvitoUserInfo>('/core/v1/accounts/self', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    return this.get<IAvitoUserInfo>('/core/v1/accounts/self');
   }
 }

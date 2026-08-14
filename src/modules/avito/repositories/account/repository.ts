@@ -5,6 +5,14 @@ import { InjectModel } from '@nestjs/sequelize';
 import { APP_LIMIT_ITEMS } from '@shared/constants';
 import { IListResponse, IPagination } from '@shared/interfaces';
 
+
+
+
+
+
+
+
+
 @Injectable()
 export class AvitoAccountRepository {
   constructor(
@@ -48,5 +56,16 @@ export class AvitoAccountRepository {
 
   public async getById(id: string): Promise<AvitoAccountModel | null> {
     return this.avitoAccountRepository.findByPk(id);
+  }
+
+  public async update(
+    accountId: string,
+    fields: Partial<IAvitoAccountCreateEntity>,
+  ): Promise<boolean> {
+    const [updated] = await this.avitoAccountRepository.update(fields, {
+      where: { id: accountId },
+    });
+
+    return updated > 0;
   }
 }

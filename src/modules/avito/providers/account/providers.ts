@@ -1,7 +1,11 @@
-import { AvitoAccountCreateCommandHandler } from '@modules/avito/commands';
+import {
+  AvitoAccountCreateCommandHandler,
+  AvitoAccountUpdateCommandHandler,
+} from '@modules/avito/commands';
 import { AvitoAccountProvider } from '@modules/avito/providers/account/provider';
 import {
   AvitoAccountClientIdQueryHandler,
+  AvitoAccountGetByIdQueryHandler,
   AvitoAccountListQueryHandler,
 } from '@modules/avito/queries';
 import '@modules/avito/queries/account/list/handler';
@@ -20,8 +24,10 @@ export const avitoAccountProviders = [
 
   // Command Handlers
   AvitoAccountCreateCommandHandler,
+  AvitoAccountUpdateCommandHandler,
 
   // Query Handlers
   AvitoAccountClientIdQueryHandler,
   AvitoAccountListQueryHandler,
+  AvitoAccountGetByIdQueryHandler,
 ];

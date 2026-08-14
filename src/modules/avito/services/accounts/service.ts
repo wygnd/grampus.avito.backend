@@ -8,7 +8,7 @@ import {
 } from '@modules/avito/interfaces';
 import { AvitoAccountProvider } from '@modules/avito/providers/account/provider';
 import {
-  AvitoAccountClientIdQuery,
+  AvitoAccountGetByClientIdQuery,
   AvitoAccountListQuery,
 } from '@modules/avito/queries';
 import '@modules/avito/queries/account/list/query';
@@ -37,7 +37,7 @@ export class AvitoAccountService {
     fields: IAvitoAccountCreateRequest,
   ): Promise<IAvitoAccountCreateResponse> {
     const accountExists = await this.queryBus.execute(
-      new AvitoAccountClientIdQuery(fields.clientId),
+      new AvitoAccountGetByClientIdQuery(fields.clientId),
     );
 
     // Если такой аккаунт уже существует: выкидываем ошибку
@@ -46,7 +46,7 @@ export class AvitoAccountService {
     }
 
     // Запрашиваем у АВИТО токен
-    const tokens = await this.avitoAccountProvider.getAccessToken({
+    const tokens = await this.avitoAccountProvider.fetchAccessToken({
       clientId: fields.clientId,
       clientSecret: fields.clientSecret,
     });

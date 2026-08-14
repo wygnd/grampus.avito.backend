@@ -1,15 +1,19 @@
+import { AvitoAccountUpdateCommand } from '@modules/avito/commands';
 import { AvitoAccountDTO } from '@modules/avito/dtos';
 import {
   IAvitoApiAccountGetAccessTokenRequest,
   IAvitoApiAccountGetAccessTokenResponse,
   IAvitoUserInfo,
 } from '@modules/avito/interfaces';
-import { AvitoAccountGetByIdQuery } from '@modules/avito/queries';
+import {
+  AvitoAccountGetByClientIdQuery,
+  AvitoAccountGetByIdQuery,
+} from '@modules/avito/queries';
 import { AvitoApiService } from '@modules/avito/services';
 import { RedisService } from '@modules/redis/services/service';
 import { REDIS_KEYS } from '@modules/redis/utils';
 import { Injectable } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { hashString } from '@shared/utils';
 
 @Injectable()
@@ -17,6 +21,7 @@ export class AvitoAccountProvider {
   constructor(
     private readonly avitoApiService: AvitoApiService,
     private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
     private readonly redisService: RedisService,
   ) {}
 
@@ -43,6 +48,7 @@ export class AvitoAccountProvider {
 
       return account;
     } catch (error) {
+      console.log('getById error', error);
       return null;
     }
   }
@@ -69,12 +75,74 @@ export class AvitoAccountProvider {
   }
 
   /**
-   * Получает новый токен доступа
+   * Получает новый токен доступа из Avito
    * @param fields
    */
-  public async getAccessToken(
+  public async fetchAccessToken(
     fields: IAvitoApiAccountGetAccessTokenRequest,
   ): Promise<IAvitoApiAccountGetAccessTokenResponse> {
-    return this.avitoApiService.getAccessToken(fields);
+    const tokens = await this.avitoApiService.getAccessToken(fields);
+
+    const account = await this.queryBus.execute(
+      new AvitoAccountGetByClientIdQuery(fields.clientId),
+    );
+
+    if (!account) {
+      return tokens;
+    }
+
+    await this.commandBus.execute(
+      new AvitoAccountUpdateCommand(account.id, {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresAt: new Date(Date.now() / 1000 + tokens.expiresIn).toISOString(),
+      }),
+    );
+
+    return tokens;
+  }
+
+  /**
+   * Возвращает токен доступа
+   * - Сначала ище в кеше
+   * @param accountId
+   */
+  public async getAccessToken(accountId: string) {
+    const tokensRedisKey = REDIS_KEYS.account.accessToken(accountId);
+
+    const tokensCache =
+      await this.redisService.get<IAvitoApiAccountGetAccessTokenResponse>(
+        tokensRedisKey,
+      );
+
+    // Если есть в кеше токен и он не истек: возвращаем
+    if (tokensCache && tokensCache.expiresIn > Date.now() / 1000) {
+      return tokensCache.accessToken;
+    }
+
+    const account = await this.getById(accountId);
+
+    if (!account) {
+      return '';
+    }
+
+    const accountTokenExpiresIn = new Date(account.expiresAt).getTime() / 1000;
+
+    if (accountTokenExpiresIn > Date.now() / 1000) {
+      return account.accessToken;
+    }
+
+    const tokens = await this.fetchAccessToken({
+      clientId: account.clientId,
+      clientSecret: account.clientSecret,
+      refreshToken: account.refreshToken,
+    });
+
+    this.redisService.set<IAvitoApiAccountGetAccessTokenResponse>(
+      tokensRedisKey,
+      { ...tokens, expiresIn: Date.now() / 1000 + tokens.expiresIn },
+    );
+
+    return tokens.accessToken;
   }
 }

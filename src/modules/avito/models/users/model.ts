@@ -2,18 +2,17 @@ import {
   IAvitoUserCreateEntity,
   IAvitoUserEntity,
 } from '@modules/avito/interfaces';
-import { AvitoAccountModel } from '@modules/avito/models';
 import {
   BelongsTo,
   Column,
   CreatedAt,
   DataType,
   ForeignKey,
-  HasOne,
   Model,
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { AvitoAccountModel } from '../accounts';
 
 @Table({
   tableName: 'users',

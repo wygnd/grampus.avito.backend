@@ -3,9 +3,7 @@ import {
   IAvitoAccountEntity,
   IAvitoAccountQuickReply,
 } from '@modules/avito/interfaces';
-import { AvitoUserModel } from '@modules/avito/models';
 import {
-  BelongsTo,
   Column,
   CreatedAt,
   DataType,
@@ -14,6 +12,7 @@ import {
   Table,
   UpdatedAt,
 } from 'sequelize-typescript';
+import { AvitoUserModel } from '../users';
 
 @Table({
   tableName: 'accounts',
