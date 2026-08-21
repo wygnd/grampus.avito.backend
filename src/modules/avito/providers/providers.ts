@@ -1,11 +1,19 @@
-import { avitoChatProviders } from '@modules/avito/providers/chats';
-import { avitoUserProviders } from '@modules/avito/providers/users';
-import { AvitoApiService } from '@modules/avito/services';
+import { avitoWebhooksProviders } from '@modules/avito/providers/webhooks';
+import { AvitoApiService } from '../services';
 import { avitoAccountProviders } from './account';
+import { avitoChatProviders } from './chats';
+import { avitoItemProviders } from './items';
+import { avitoMessageProviders } from './messages';
+import { avitoUserProviders } from './users';
+import { avitoValidateProviders } from './validators';
 
 export const avitoProviders = [
   AvitoApiService,
   ...avitoAccountProviders,
   ...avitoUserProviders,
   ...avitoChatProviders,
+  ...avitoMessageProviders,
+  ...avitoValidateProviders,
+  ...avitoItemProviders,
+  ...avitoWebhooksProviders,
 ];

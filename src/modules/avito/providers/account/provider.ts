@@ -1,4 +1,7 @@
-import { AvitoAccountUpdateCommand } from '@modules/avito/commands';
+import {
+  AvitoAccountDeleteCommand,
+  AvitoAccountUpdateCommand,
+} from '@modules/avito/commands';
 import { AvitoAccountDTO } from '@modules/avito/dtos';
 import {
   IAvitoApiAccountGetAccessTokenRequest,
@@ -8,16 +11,20 @@ import {
 import {
   AvitoAccountGetByClientIdQuery,
   AvitoAccountGetByIdQuery,
+  AvitoAccountListQuery,
 } from '@modules/avito/queries';
 import { AvitoApiService } from '@modules/avito/services';
 import { RedisService } from '@modules/redis/services/service';
 import { REDIS_KEYS } from '@modules/redis/utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { hashString } from '@shared/utils';
+import { IListResponse, IPagination } from '@shared/interfaces';
+import { hashString, normalizeError } from '@shared/utils';
 
 @Injectable()
 export class AvitoAccountProvider {
+  private readonly logger = new Logger(AvitoAccountProvider.name);
+
   constructor(
     private readonly avitoApiService: AvitoApiService,
     private readonly queryBus: QueryBus,
@@ -48,7 +55,7 @@ export class AvitoAccountProvider {
 
       return account;
     } catch (error) {
-      console.log('getById error', error);
+      this.logger.error(normalizeError(error));
       return null;
     }
   }
@@ -141,8 +148,36 @@ export class AvitoAccountProvider {
     this.redisService.set<IAvitoApiAccountGetAccessTokenResponse>(
       tokensRedisKey,
       { ...tokens, expiresIn: Date.now() / 1000 + tokens.expiresIn },
+      tokens.expiresIn - 300,
     );
 
     return tokens.accessToken;
+  }
+
+  public async list(
+    pagination?: IPagination,
+  ): Promise<IListResponse<AvitoAccountDTO[]>> {
+    try {
+      return await this.queryBus.execute(new AvitoAccountListQuery(pagination));
+    } catch (error) {
+      this.logger.error(normalizeError(error));
+      return {
+        result: [],
+        currentPage: 1,
+        totalRows: 0,
+        totalPages: 1,
+      };
+    }
+  }
+
+  public async delete(accountId: string) {
+    try {
+      return await this.commandBus.execute(
+        new AvitoAccountDeleteCommand(accountId),
+      );
+    } catch (error) {
+      this.logger.error(normalizeError(error));
+      return false;
+    }
   }
 }

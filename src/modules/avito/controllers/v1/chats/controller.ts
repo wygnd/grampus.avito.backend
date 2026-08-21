@@ -1,14 +1,7 @@
 import { AVITO_ACCOUNT_CHAT_API_TAG } from '@modules/avito/constants';
 import { AvitoChatService } from '@modules/avito/services/chats';
-import {
-  Controller,
-  Get,
-  Param,
-  ParseBoolPipe,
-  Put,
-  Query,
-} from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, Put, Query } from '@nestjs/common';
+import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { PaginationRequestDTO } from '@shared/dtos';
 
 @ApiTags(AVITO_ACCOUNT_CHAT_API_TAG)
@@ -32,5 +25,11 @@ export class AvitoChatControllerV1 {
     @Query() pagination: PaginationRequestDTO,
   ) {
     return this.avitoChatService.getChatList(accountId, pagination);
+  }
+
+  @ApiOperation({ summary: 'Обновить список чатов' })
+  @Put()
+  public async refreshChats(@Param('account_id') accountId: string) {
+    return this.avitoChatService.refreshChatList(accountId);
   }
 }

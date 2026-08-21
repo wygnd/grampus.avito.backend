@@ -15,6 +15,15 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 
 
+
+
+
+
+
+
+
+
+
 @Injectable()
 export class AvitoApiService {
   private readonly httpInstance: AxiosInstance;
@@ -40,7 +49,13 @@ export class AvitoApiService {
     }
 
     if (accessToken) {
-      requestConfig['headers']['Authorization'] = `Bearer ${accessToken}`;
+      if ('headers' in requestConfig && requestConfig.headers) {
+        requestConfig['headers']['Authorization'] = `Bearer ${accessToken}`;
+      } else {
+        requestConfig['headers'] = {};
+
+        requestConfig['headers']['Authorization'] = `Bearer ${accessToken}`;
+      }
     }
 
     const response = await this.httpInstance.post<U, AxiosResponse<T>>(
@@ -117,6 +132,6 @@ export class AvitoApiService {
   }
 
   public async getProfile(accessToken: string): Promise<IAvitoUserInfo> {
-    return this.get<IAvitoUserInfo>('/core/v1/accounts/self');
+    return this.get<IAvitoUserInfo>('/core/v1/accounts/self', accessToken);
   }
 }

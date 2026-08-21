@@ -11,13 +11,20 @@ export interface IAvitoMessageEntity {
   authorId: string;
   text: string;
   direction: TAvitoMessageDirection;
+  messageCreated: number;
   isRead: boolean;
+  read?: number;
   payload?: TAvitoMessage;
   updatedAt: string;
   createdAt: string;
 }
 
 export type IAvitoMessageCreateEntity = Omit<
-  Optional<IAvitoMessageEntity, 'isRead' | 'payload'>,
+  Optional<IAvitoMessageEntity, 'isRead' | 'read' | 'payload'>,
   'id' | 'updatedAt' | 'createdAt'
 >;
+
+export interface IAvitoMessageUpdateEntity {
+  id: string;
+  fields: Partial<IAvitoMessageCreateEntity>;
+}

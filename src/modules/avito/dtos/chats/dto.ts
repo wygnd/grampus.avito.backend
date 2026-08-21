@@ -1,9 +1,13 @@
+import { AvitoMessageDTO } from '@modules/avito/dtos';
 import { IAvitoChatEntity } from '@modules/avito/interfaces';
-import {
-  type IAvitoChatContextData,
-  IAvitoChatUserData,
-} from '@shared/interfaces';
+import { type IAvitoChatContextData, IAvitoChatUserData } from '@shared/interfaces';
 import { Exclude, Expose } from 'class-transformer';
+
+
+
+
+
+
 
 export class AvitoChatDTO implements IAvitoChatEntity {
   @Expose()
@@ -28,6 +32,12 @@ export class AvitoChatDTO implements IAvitoChatEntity {
   hasPhone: boolean;
 
   @Expose()
+  lastMessageTime: number;
+
+  @Expose()
+  unreadCount: number;
+
+  @Expose()
   isManagerActive: boolean;
 
   @Expose()
@@ -41,4 +51,7 @@ export class AvitoChatDTO implements IAvitoChatEntity {
 
   @Exclude()
   createdAt: string;
+
+  @Expose()
+  messages?: AvitoMessageDTO[];
 }

@@ -1,4 +1,4 @@
-import { AuthLoginDTO } from '@modules/auth/controllers/dtos';
+import { AuthLoginDTO } from '@modules/auth/dtos';
 import { AuthService } from '@modules/auth/services';
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';

@@ -14,7 +14,7 @@ interface IAvitoMessageDefault {
   author_id: number;
   created: number;
   direction: TAvitoMessageDirection;
-  isRead: boolean;
+  is_read: boolean;
   read?: number;
 }
 
@@ -48,35 +48,45 @@ interface IAvitoMessageLink extends IAvitoMessageDefault {
   content: IAvitoMessageLinkContent;
 }
 
+interface IAvitoMessageVoice extends IAvitoMessageDefault {
+  type: AvitoMessageTypeEnum.VOICE;
+  content: IAvitoMessageVoiceContent;
+}
+
 export type TAvitoMessageDirection = 'in' | 'out';
 
-interface IAvitoMessageTextContent {
+export interface IAvitoMessageTextContent {
   text: string;
 }
 
-interface IAvitoMessageCallContent {
+export interface IAvitoMessageCallContent {
   status: 'missed';
   target_user_id: number;
 }
 
-interface IAvitoMessageSystemContent {
+export interface IAvitoMessageSystemContent {
+  text: string;
   flow_id: string;
 }
 
-interface IAvitoMessageImageContent {
+export interface IAvitoMessageImageContent {
   sizes: Record<string, string>;
 }
 
-interface IAvitoMessageItemContent {
+export interface IAvitoMessageItemContent {
   image_url: string;
   item_url: string;
   price_string: string;
   title: string;
 }
 
-interface IAvitoMessageLinkContent {
+export interface IAvitoMessageLinkContent {
   description: string;
   preview: IAvitoPreview;
   text: string;
   url: string;
+}
+
+export interface IAvitoMessageVoiceContent {
+  voice_id: string;
 }

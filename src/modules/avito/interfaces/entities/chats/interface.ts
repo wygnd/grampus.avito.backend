@@ -1,4 +1,5 @@
 import { IAvitoChatContextData, IAvitoChatUserData } from '@shared/interfaces';
+import { Optional } from '@shared/types';
 
 export interface IAvitoChatEntity {
   id: string;
@@ -10,14 +11,14 @@ export interface IAvitoChatEntity {
   usersData: IAvitoChatUserData[];
   contextData: IAvitoChatContextData;
   isManagerActive: boolean;
-
+  lastMessageTime: number;
   hasPhone: boolean;
-
+  unreadCount: number;
   createdAt: string;
   updatedAt: string;
 }
 
 export type IAvitoChatCreateEntity = Omit<
-  IAvitoChatEntity,
+  Optional<IAvitoChatEntity, 'unreadCount' | 'hasPhone' | 'itemId'>,
   'id' | 'createdAt' | 'updatedAt'
 >;

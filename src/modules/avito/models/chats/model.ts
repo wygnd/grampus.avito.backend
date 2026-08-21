@@ -45,7 +45,7 @@ export class AvitoChatModel extends Model<
     type: DataType.STRING,
     allowNull: true,
   })
-  declare itemId?: string;
+  declare itemId?: number;
 
   @Column({
     type: DataType.DATE,
@@ -79,6 +79,20 @@ export class AvitoChatModel extends Model<
     defaultValue: true,
   })
   declare isManagerActive: boolean;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  declare lastMessageTime: number;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  declare unreadCount: number;
 
   @Column({
     type: DataType.BOOLEAN,

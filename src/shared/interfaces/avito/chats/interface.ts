@@ -40,7 +40,10 @@ interface IAvitoChatContextDataItemValue {
   id: number;
   title: string;
   user_id: number;
-  images: {};
+  images: {
+    main: Record<string, string>;
+    count: number;
+  };
   status_id: number;
   price_string: string;
   url: string;

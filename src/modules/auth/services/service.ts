@@ -1,4 +1,4 @@
-import { IAuthUser } from '@modules/auth/controllers/interfaces';
+import { IAuthUser } from '@modules/auth/interfaces';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IWikiResponse } from '@shared/interfaces/wiki';
 
@@ -34,6 +34,9 @@ export class AuthService {
       throw new UnauthorizedException('Неверный логин или пароль');
     }
 
-    return result.data;
+    return {
+      user: result.data,
+      auth_token: result.data.login,
+    };
   }
 }

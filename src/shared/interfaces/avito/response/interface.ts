@@ -1,3 +1,5 @@
 export interface IAvitoResponseMeta {
-  has_more: boolean;
+  meta: {
+    has_more: boolean;
+  };
 }

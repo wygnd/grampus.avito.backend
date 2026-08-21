@@ -1,5 +1,6 @@
 import {
   AvitoAccountCreateCommandHandler,
+  AvitoAccountDeleteCommandHandler,
   AvitoAccountUpdateCommandHandler,
 } from '@modules/avito/commands';
 import { AvitoAccountProvider } from '@modules/avito/providers/account/provider';
@@ -25,6 +26,7 @@ export const avitoAccountProviders = [
   // Command Handlers
   AvitoAccountCreateCommandHandler,
   AvitoAccountUpdateCommandHandler,
+  AvitoAccountDeleteCommandHandler,
 
   // Query Handlers
   AvitoAccountClientIdQueryHandler,

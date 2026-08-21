@@ -109,10 +109,10 @@ export class AvitoAccountModel extends Model<
   declare quickReplies: IAvitoAccountQuickReply[];
 
   @CreatedAt
-  declare updatedAt: string;
+  declare createdAt: string;
 
   @UpdatedAt
-  declare createdAt: string;
+  declare updatedAt: string;
 
   @HasOne(() => AvitoUserModel, { onDelete: 'CASCADE' })
   declare user: AvitoUserModel;

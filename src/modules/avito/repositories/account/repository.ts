@@ -1,17 +1,10 @@
 import { IAvitoAccountCreateEntity } from '@modules/avito/interfaces';
-import { AvitoAccountModel } from '@modules/avito/models';
+import { AvitoAccountModel, AvitoUserModel } from '@modules/avito/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { APP_LIMIT_ITEMS } from '@shared/constants';
 import { IListResponse, IPagination } from '@shared/interfaces';
-
-
-
-
-
-
-
-
+import { Op } from 'sequelize';
 
 @Injectable()
 export class AvitoAccountRepository {
@@ -25,6 +18,7 @@ export class AvitoAccountRepository {
   ): Promise<AvitoAccountModel | null> {
     return this.avitoAccountRepository.findOne({
       where: { clientId },
+      include: [AvitoUserModel],
     });
   }
 
@@ -44,6 +38,7 @@ export class AvitoAccountRepository {
       offset: offset,
       limit: limit,
       order: [['createdAt', 'DESC']],
+      include: [AvitoUserModel],
     });
 
     return {
@@ -55,7 +50,10 @@ export class AvitoAccountRepository {
   }
 
   public async getById(id: string): Promise<AvitoAccountModel | null> {
-    return this.avitoAccountRepository.findByPk(id);
+    return this.avitoAccountRepository.findOne({
+      where: { id },
+      include: [AvitoUserModel],
+    });
   }
 
   public async update(
@@ -67,5 +65,11 @@ export class AvitoAccountRepository {
     });
 
     return updated > 0;
+  }
+
+  public async delete(...accountIds: string[]): Promise<number> {
+    return this.avitoAccountRepository.destroy({
+      where: { id: { [Op.in]: accountIds } },
+    });
   }
 }

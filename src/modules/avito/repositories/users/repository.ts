@@ -2,6 +2,7 @@ import { IAvitoUserCreateEntity } from '@modules/avito/interfaces';
 import { AvitoUserModel } from '@modules/avito/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class AvitoUserRepository {
@@ -20,5 +21,15 @@ export class AvitoUserRepository {
     return this.repo.findOne({
       where: { accountId },
     });
+  }
+
+  public async deleteByAccountIds(...accountIds: string[]): Promise<number> {
+    return this.repo.destroy({ where: { accountId: { [Op.in]: accountIds } } });
+  }
+
+  public async getByExternalId(
+    externalId: number,
+  ): Promise<AvitoUserModel | null> {
+    return this.repo.findOne({ where: { externalId } });
   }
 }

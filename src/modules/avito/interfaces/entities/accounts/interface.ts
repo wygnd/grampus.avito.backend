@@ -1,3 +1,4 @@
+import { IAvitoUserEntity } from '@modules/avito/interfaces';
 import { Optional } from '@shared/types';
 
 export interface IAvitoAccountQuickReply {
@@ -24,6 +25,8 @@ export interface IAvitoAccountEntity {
 
   updatedAt: string;
   createdAt: string;
+
+  user?: IAvitoUserEntity;
 }
 
 export type IAvitoAccountCreateEntity = Omit<

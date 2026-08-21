@@ -1,8 +1,10 @@
-import { AvitoChatModel } from '@modules/avito/models';
+import { IAvitoChatCreateEntity } from '@modules/avito/interfaces';
+import { AvitoChatModel, AvitoMessageModel } from '@modules/avito/models';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { APP_LIMIT_ITEMS } from '@shared/constants';
 import { IListResponse, IPagination } from '@shared/interfaces';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class AvitoChatRepository {
@@ -22,14 +24,54 @@ export class AvitoChatRepository {
       where: { accountId },
       offset: offset,
       limit: limit,
-      order: [['createdAt', 'DESC']],
+      order: [['lastMessageTime', 'DESC']],
+      include: [
+        {
+          model: AvitoMessageModel,
+          limit: 1,
+          order: [['message_created', 'DESC']],
+        },
+      ],
     });
 
     return {
       result: rows,
       currentPage: page,
-      totalPages: count || 1,
-      totalRows: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / limit),
+      totalRows: count || 1,
     };
+  }
+
+  public async createBulk(
+    items: IAvitoChatCreateEntity[],
+  ): Promise<AvitoChatModel[]> {
+    return this.repo.bulkCreate(items, {
+      updateOnDuplicate: ['chatUpdatedAt', 'contextData', 'usersData'],
+    });
+  }
+
+  public async getById(chatId: string): Promise<AvitoChatModel | null> {
+    return this.repo.findByPk(chatId);
+  }
+
+  public async deleteAll(...accountIds: string[]): Promise<number> {
+    return this.repo.destroy({
+      where: { accountId: { [Op.in]: accountIds } },
+    });
+  }
+
+  public async update(
+    chatId: string,
+    fields: Partial<IAvitoChatCreateEntity>,
+  ): Promise<boolean> {
+    const [updated] = await this.repo.update(fields, { where: { id: chatId } });
+
+    return updated > 0;
+  }
+
+  public async getByExternalId(
+    externalId: string,
+  ): Promise<AvitoChatModel | null> {
+    return this.repo.findOne({ where: { externalId } });
   }
 }

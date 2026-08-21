@@ -4,9 +4,11 @@ import { AvitoAccountService } from '@modules/avito/services';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -35,5 +37,15 @@ export class AvitoAccountControllerV1 {
   @Get()
   public async getAccountList(@Query() query: PaginationRequestDTO) {
     return this.avitoAccountService.getList(query);
+  }
+
+  @ApiOperation({
+    summary: 'Удалить аккаунт',
+    description:
+      'Удаляет аккаунт, а так же все чаты и сообщения, связанные с ним',
+  })
+  @Delete(':account_id')
+  public async deleteAccount(@Param('account_id') accountId: string) {
+    return this.avitoAccountService.deleteAccount(accountId);
   }
 }

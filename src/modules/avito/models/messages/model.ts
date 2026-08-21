@@ -52,7 +52,7 @@ export class AvitoMessageModel extends Model<
   declare authorId: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.TEXT,
     allowNull: false,
   })
   declare text: string;
@@ -71,10 +71,23 @@ export class AvitoMessageModel extends Model<
   declare isRead: boolean;
 
   @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+  })
+  declare read?: number;
+
+  @Column({
     type: DataType.JSONB,
     allowNull: true,
   })
   declare payload?: TAvitoMessage;
+
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  })
+  declare messageCreated: number;
 
   @UpdatedAt
   declare updatedAt: string;

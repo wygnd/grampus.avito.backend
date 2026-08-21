@@ -1,3 +1,4 @@
+import { AvitoUserDTO } from '@modules/avito/dtos';
 import {
   IAvitoAccountEntity,
   IAvitoAccountQuickReply,
@@ -49,4 +50,7 @@ export class AvitoAccountDTO implements IAvitoAccountEntity {
 
   @Exclude()
   createdAt: string;
+
+  @Expose()
+  user?: AvitoUserDTO;
 }
